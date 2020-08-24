@@ -1,0 +1,19 @@
+{
+  "name": "innovei",
+  "version": "0.1.0",
+  "description": "innovei web application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gioweo/innovei.git"
+  },
+  "author": "Giovanni Leon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gioweo/innovei/issues"
+  },
+  "homepage": "https://github.com/gioweo/innovei#readme"
+}

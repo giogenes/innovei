@@ -1,7 +1,12 @@
 const express = require("express");
+const manufacturers = require('./routes/manufacturers.js')
 
 const app = express();
 const PORT = 3000;
+
+app.use(express.json());
+
+app.use('/api/manufacturers', manufacturers);
 
 app.get("/", (req, res) => {
   res.send(

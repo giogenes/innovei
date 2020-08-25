@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/gioweo/innovei#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "pg-promise": "^10.6.0"
   }
 }

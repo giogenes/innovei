@@ -10,7 +10,7 @@ CREATE TABLE pallets (
 
 CREATE TABLE manufacturers (
     manufacturer_id uuid DEFAULT uuid_generate_v4 () primary key,
-    manufacturer_name varchar(30) NOT NULL
+    manufacturer_name varchar(30) NOT NULL CHECK (LENGTH(manufacturer_name) > 0)
 );
 
 CREATE TABLE unit_types (

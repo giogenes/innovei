@@ -4,7 +4,7 @@ This is a general web appilcation for the whole Innovei Technologies domain. It 
 
 ## Backend Routes
 
-### /
+### Manufactur
 
 General Information about the backend service
 
@@ -14,6 +14,4 @@ This is the github repository for the Innovei Technologies website and online da
 
 For more information, visit http://innovei.com
 
-
-
-*2020 Innoveei Technologies*
+_2020 Innoveei Technologies_

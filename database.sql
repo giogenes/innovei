@@ -16,7 +16,7 @@ CREATE TABLE manufacturers (
 CREATE TABLE unit_types (
     unit_type_id uuid DEFAULT uuid_generate_v4 () primary key,
     unit_name varchar(30) NOT NULL,
-    part_num varchar(30) NOT NULL,
+    part_number varchar(30) NOT NULL,
     manufacturer_id uuid references manufacturers(manufacturer_id),
     unit_description varchar(128) NOT NULL
 );
@@ -78,7 +78,7 @@ VALUES ('RMA');
 INSERT INTO customers (customer_name, customer_email, customer_phone, customer_address_1, customer_address_2, customer_city, customer_state, customer_zip_code, customer_country)
 VALUES ('PowerVision Robot', 'support.us@powervision.me', '855-562-6699', '9570 Pan American Dr.', 'DOCK #6', 'El Paso', 'TX', '79928', 'USA');
 
-INSERT INTO unit_types (unit_name, part_num, manufacturer_id, unit_description)
+INSERT INTO unit_types (unit_name, part_number, manufacturer_id, unit_description)
 SELECT 'PowerEgg', 'PEG10', manufacturers.manufacturer_id,'Egg shaped areal drone'
 FROM manufacturers
 WHERE manufacturers.manufacturer_name = 'PowerVision Robot';
@@ -110,7 +110,7 @@ DROP TABLE customers CASCADE;
 DROP TABLE units CASCADE;
 DROP TABLE locations CASCADE;
 
-SELECT unit_id, serial_num, manufacturer_name, part_num, unit_name, pallet_name, bay, unit_description, ticket_id FROM units 
+SELECT unit_id, serial_num, manufacturer_name, part_number, unit_name, pallet_name, bay, unit_description, ticket_id FROM units 
     INNER JOIN unit_types 
         INNER JOIN manufacturers 
             ON unit_types.manufacturer_id = manufacturers.manufacturer_id 

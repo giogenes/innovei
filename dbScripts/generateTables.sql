@@ -10,7 +10,7 @@ CREATE TABLE pallets (
 
 CREATE TABLE manufacturers (
     manufacturer_id uuid DEFAULT uuid_generate_v4 () primary key,
-    manufacturer_name varchar(30) NOT NULL CHECK (LENGTH(manufacturer_name) > 0)
+    manufacturer_name varchar(30) NOT NULL
 );
 
 CREATE TABLE unit_types (
@@ -56,6 +56,15 @@ CREATE TABLE units (
     pallet_id uuid references pallets(pallet_id)
 );
 
+CREATE TABLE users (
+
+    user_id uuid DEFAULT uuid_generate_v4 () primary key,
+    username varChar(30) NOT NULL,
+    email varChar(30) NOT NULL,
+    password text NOT NULL,
+    is_admin BOOLEAN NOT NULL
+);
+
 
 CREATE TABLE locations (
 
@@ -98,25 +107,4 @@ AND pallets.pallet_name = 'INNPLLT082420001';
 
 INSERT INTO locations (location_id, location_name, next_location_ids)
 VALUES ('1b0b1fe9-3a7f-41a9-88d9-8085cb85d970', 'A Stock', '{"44c14344-dda6-4741-b755-691f79895174", "159bca70-4945-4e5d-bb81-79a3a75db460", "008185d8-0324-4627-b817-6e9dd17538e3"}');
-
-
-DROP TABLE unit_types CASCADE;
-DROP TABLE manufacturers CASCADE;
-DROP TABLE pallets CASCADE;
-DROP TABLE tickets CASCADE;
-DROP TABLE unit_types CASCADE;
-DROP TABLE ticket_types CASCADE;
-DROP TABLE customers CASCADE;
-DROP TABLE units CASCADE;
-DROP TABLE locations CASCADE;
-
-SELECT unit_id, serial_num, manufacturer_name, part_number, unit_name, pallet_name, bay, unit_description, ticket_id FROM units 
-    INNER JOIN unit_types 
-        INNER JOIN manufacturers 
-            ON unit_types.manufacturer_id = manufacturers.manufacturer_id 
-        ON units.unit_type_id = unit_types.unit_type_id
-    INNER JOIN pallets 
-        ON units.pallet_id = pallets.pallet_id;
-
-SELECT * FROM tickets WHERE ticket_id = 'b63f1b75-d786-4cd5-aa4e-359ce2407e76'
 

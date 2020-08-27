@@ -1,14 +1,16 @@
 const express = require("express");
 const manufacturers = require("./routes/manufacturers.js");
 const unitTypes = require("./routes/unitTypes");
+const auth = require("./routes/auth");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 app.use(express.json());
 
 app.use("/api/manufacturers", manufacturers);
 app.use("/api/unit-types", unitTypes);
+app.use("/api/users", auth);
 
 app.get("/", (req, res) => {
   res.send(

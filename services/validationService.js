@@ -28,6 +28,15 @@ const validateLogin = (object) => {
   return schema.validate(object);
 };
 
+const validateId = (object) => {
+  const schema = Joi.object({
+    id: Joi.number(),
+  });
+
+  return schema.validate(object);
+};
+
 module.exports.validateManufacturers = validateManufacturers;
 module.exports.validateRegistration = validateRegistration;
 module.exports.validateLogin = validateLogin;
+module.exports.validateId = validateId;

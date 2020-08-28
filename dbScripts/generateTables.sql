@@ -1,7 +1,7 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "SERIAL-ossp";
 
 CREATE TABLE pallets (
-    pallet_id uuid DEFAULT uuid_generate_v4 () primary key,
+    pallet_id SERIAL primary key,
     pallet_name varchar(16) NOT NULL,
     bay smallserial NOT NULL,
     about varchar(128) NOT NULL,
@@ -9,25 +9,25 @@ CREATE TABLE pallets (
 );
 
 CREATE TABLE manufacturers (
-    manufacturer_id uuid DEFAULT uuid_generate_v4 () primary key,
+    manufacturer_id SERIAL primary key,
     manufacturer_name varchar(30) NOT NULL
 );
 
 CREATE TABLE unit_types (
-    unit_type_id uuid DEFAULT uuid_generate_v4 () primary key,
+    unit_type_id SERIAL primary key,
     unit_name varchar(30) NOT NULL,
     part_number varchar(30) NOT NULL,
-    manufacturer_id uuid references manufacturers(manufacturer_id),
+    manufacturer_id SERIAL references manufacturers(manufacturer_id),
     unit_description varchar(128) NOT NULL
 );
 
 CREATE TABLE ticket_types (
-    ticket_type_id uuid DEFAULT uuid_generate_v4 () primary key,
+    ticket_type_id SERIAL primary key,
     ticket_type_name varChar(10) NOT NULL
 );
 
 CREATE TABLE customers (
-    customer_id uuid DEFAULT uuid_generate_v4 () primary key,
+    customer_id SERIAL primary key,
     customer_name varChar(50) NOT NULL,
     customer_email varChar(50) NOT NULL,
     customer_phone varChar(15) NOT NULL,
@@ -40,25 +40,25 @@ CREATE TABLE customers (
 );
 
 CREATE TABLE tickets (
-    ticket_id uuid DEFAULT uuid_generate_v4 () primary key,
+    ticket_id SERIAL primary key,
     ticket_name varChar(30) NOT NULL,
-    ticket_type_id uuid references ticket_types(ticket_type_id),
-    customer_id uuid references customers(customer_id)
+    ticket_type_id SERIAL references ticket_types(ticket_type_id),
+    customer_id SERIAL references customers(customer_id)
 );
 
 
 CREATE TABLE units (
 
-    unit_id uuid DEFAULT uuid_generate_v4 () primary key,
+    unit_id SERIAL primary key,
     serial_num varChar(30) NOT NULL,
-    unit_type_id uuid references unit_types(unit_type_id), 
-    ticket_id uuid references tickets(ticket_id),
-    pallet_id uuid references pallets(pallet_id)
+    unit_type_id SERIAL references unit_types(unit_type_id), 
+    ticket_id SERIAL references tickets(ticket_id),
+    pallet_id SERIAL references pallets(pallet_id)
 );
 
 CREATE TABLE users (
 
-    user_id uuid DEFAULT uuid_generate_v4 () primary key,
+    user_id SERIAL primary key,
     username varChar(30) NOT NULL,
     email varChar(30) NOT NULL,
     password text NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE users (
 
 CREATE TABLE locations (
 
-location_id uuid DEFAULT uuid_generate_v4 () primary key,
+location_id SERIAL primary key,
 location_name varChar(30) NOT NULL,
 super_location varChar(40),
 next_location_ids varChar(40)[]
@@ -105,6 +105,8 @@ WHERE unit_types.unit_name = 'PowerEgg'
 AND tickets.ticket_name = '0001'
 AND pallets.pallet_name = 'INNPLLT082420001';
 
+/* 
 INSERT INTO locations (location_id, location_name, next_location_ids)
 VALUES ('1b0b1fe9-3a7f-41a9-88d9-8085cb85d970', 'A Stock', '{"44c14344-dda6-4741-b755-691f79895174", "159bca70-4945-4e5d-bb81-79a3a75db460", "008185d8-0324-4627-b817-6e9dd17538e3"}');
+*/
 

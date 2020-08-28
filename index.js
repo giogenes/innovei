@@ -3,6 +3,8 @@ const manufacturers = require("./routes/manufacturers.js");
 const unitTypes = require("./routes/unitTypes");
 const auth = require("./routes/auth");
 
+const hashIds = require("./services/hashId");
+
 const app = express();
 const PORT = process.env.PORT;
 
@@ -12,6 +14,7 @@ app.use("/api/manufacturers", manufacturers);
 app.use("/api/unit-types", unitTypes);
 app.use("/api/users", auth);
 
+console.log(hashIds.encode(1));
 app.get("/", (req, res) => {
   res.send(
     "<h1>Innovei Technologies Web Application API v0.1.0</h1></br><p>Please visit /api/item to get started</p>"

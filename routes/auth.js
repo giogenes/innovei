@@ -11,7 +11,7 @@ const validationService = require("../services/validationService");
 
 const router = express.Router();
 
-router.post("/register", auth("admin"), async (req, res) => {
+router.post("/register", async (req, res) => {
   const { username, email, password, is_admin } = req.body;
 
   const { error } = validationService.validateRegistration(req.body);
@@ -34,9 +34,9 @@ router.post("/register", auth("admin"), async (req, res) => {
         details: "email is already registered",
       });
   } catch (error) {
-    return res.status(statusCodes.sc_400.code).json({
-      status: statusCodes.sc_400.code,
-      details: "something went wrong",
+    return res.status(statusCodes.sc_500.code).json({
+      status: statusCodes.sc_500.code,
+      details: statusCodes.sc_500.code,
     });
   }
 
@@ -54,9 +54,9 @@ router.post("/register", auth("admin"), async (req, res) => {
       details: `registered user with email: ${result[0].email}`,
     });
   } catch (error) {
-    res.status(statusCodes.sc_400.code).json({
-      status: statusCodes.sc_400.code,
-      details: "something went wrong",
+    res.status(statusCodes.sc_500.code).json({
+      status: statusCodes.sc_500.code,
+      details: statusCodes.sc_500.code,
     });
   }
 });
@@ -97,9 +97,9 @@ router.post("/login", async (req, res) => {
     );
     res.header("auth-token", token).json({ status: 200, details: "logged in" });
   } catch (error) {
-    res.status(statusCodes.sc_400.code).json({
-      status: statusCodes.sc_400.code,
-      details: "something went wrong",
+    res.status(statusCodes.sc_500.code).json({
+      status: statusCodes.sc_500.code,
+      details: statusCodes.sc_500.code,
     });
   }
 });

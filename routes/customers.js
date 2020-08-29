@@ -11,9 +11,9 @@ const router = express.Router();
 
 router.get("/", auth("user"), async (req, res) => {
   try {
-    const result = await dbService.any("SELECT * FROM manufacturers");
+    const result = await dbService.any("SELECT * FROM customers");
     res.json(result);
-  } catch (error) {
+  } catch (e) {
     res.status(statusCodes.sc_500.code).json({
       status: statusCodes.sc_500.code,
       details: statusCodes.sc_500.defaultMessage,
@@ -25,12 +25,12 @@ router.get("/:id", verifyId, auth("user"), async (req, res) => {
   try {
     const result = await dbService.any(
       "SELECT * \
-      FROM manufacturers \
-      WHERE manufacturer_id = $1",
+      FROM customers \
+      WHERE customer_id = $1",
       [req.params.id]
     );
     res.json(result);
-  } catch (error) {
+  } catch (e) {
     res.status(statusCodes.sc_404.code).json({
       status: statusCodes.sc_404.code,
       details: statusCodes.sc_404.defaultMessage,
@@ -39,7 +39,18 @@ router.get("/:id", verifyId, auth("user"), async (req, res) => {
 });
 
 router.post("/", auth("admin"), async (req, res) => {
-  const { error } = validationService.validateManufacturers(req.body);
+  const {
+    customer_name,
+    customer_email,
+    customer_phone,
+    customer_address_1,
+    customer_address_2,
+    customer_city,
+    customer_state,
+    customer_zip_code,
+    customer_country,
+  } = req.body;
+  const { error } = validationService.validateCustomers(req.body);
   if (error)
     return res.status(statusCodes.sc_400.code).json({
       status: statusCodes.sc_400.code,
@@ -48,9 +59,21 @@ router.post("/", auth("admin"), async (req, res) => {
 
   try {
     const result = await dbService.any(
-      "INSERT INTO manufacturers (manufacturer_name) \
-      VALUES ($1) RETURNING *",
-      [req.body.manufacturer_name]
+      "INSERT INTO customers \
+    (customer_name, customer_email, customer_phone, customer_address_1, customer_address_2, \
+    customer_city, customer_state, customer_zip_code, customer_country) \
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
+      [
+        customer_name,
+        customer_email,
+        customer_phone,
+        customer_address_1,
+        customer_address_2,
+        customer_city,
+        customer_state,
+        customer_zip_code,
+        customer_country,
+      ]
     );
     res.json(result);
   } catch (error) {
@@ -62,7 +85,18 @@ router.post("/", auth("admin"), async (req, res) => {
 });
 
 router.put("/:id", verifyId, auth("admin"), async (req, res) => {
-  const { error } = validationService.validateManufacturers(req.body);
+  const {
+    customer_name,
+    customer_email,
+    customer_phone,
+    customer_address_1,
+    customer_address_2,
+    customer_city,
+    customer_state,
+    customer_zip_code,
+    customer_country,
+  } = req.body;
+  const { error } = validationService.validateCustomers(req.body);
   if (error)
     return res.status(statusCodes.sc_400.code).json({
       status: statusCodes.sc_400.code,
@@ -71,11 +105,22 @@ router.put("/:id", verifyId, auth("admin"), async (req, res) => {
 
   try {
     const result = await dbService.any(
-      "UPDATE manufacturers \
-      SET manufacturer_name = $1 \
-      WHERE manufacturer_id = $2 \
+      "UPDATE customers SET customer_name = $1, customer_email = $2, customer_phone = $3, customer_address_1 = $4, \
+      customer_address_2 = $5, customer_city = $6, customer_state = $7, customer_zip_code = $8, customer_country = $9 \
+      WHERE customer_id = $10 \
       RETURNING *",
-      [req.body.manufacturer_name, req.params.id]
+      [
+        customer_name,
+        customer_email,
+        customer_phone,
+        customer_address_1,
+        customer_address_2,
+        customer_city,
+        customer_state,
+        customer_zip_code,
+        customer_country,
+        req.params.id,
+      ]
     );
     res.json(result);
   } catch (error) {
@@ -89,13 +134,13 @@ router.put("/:id", verifyId, auth("admin"), async (req, res) => {
 router.delete("/:id", verifyId, auth("admin"), async (req, res) => {
   try {
     const result = await dbService.any(
-      "DELETE FROM manufacturers \
-      WHERE manufacturer_id = $1 \
+      "DELETE FROM customers \
+      WHERE customer_id = $1 \
       RETURNING *",
       [req.params.id]
     );
     res.json(result);
-  } catch (error) {
+  } catch (e) {
     res.status(statusCodes.sc_500.code).json({
       status: statusCodes.sc_500.code,
       details: statusCodes.sc_500.defaultMessage,

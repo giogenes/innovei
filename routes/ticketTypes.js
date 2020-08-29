@@ -11,9 +11,9 @@ const router = express.Router();
 
 router.get("/", auth("user"), async (req, res) => {
   try {
-    const result = await dbService.any("SELECT * FROM manufacturers");
+    const result = await dbService.any("SELECT * FROM ticket_types");
     res.json(result);
-  } catch (error) {
+  } catch (e) {
     res.status(statusCodes.sc_500.code).json({
       status: statusCodes.sc_500.code,
       details: statusCodes.sc_500.defaultMessage,
@@ -25,21 +25,21 @@ router.get("/:id", verifyId, auth("user"), async (req, res) => {
   try {
     const result = await dbService.any(
       "SELECT * \
-      FROM manufacturers \
-      WHERE manufacturer_id = $1",
+      FROM ticket_types \
+      WHERE ticket_type_id = $1",
       [req.params.id]
     );
     res.json(result);
-  } catch (error) {
-    res.status(statusCodes.sc_404.code).json({
-      status: statusCodes.sc_404.code,
-      details: statusCodes.sc_404.defaultMessage,
+  } catch (e) {
+    res.status(statusCodes.sc_500.code).json({
+      status: statusCodes.sc_500.code,
+      details: statusCodes.sc_500.defaultMessage,
     });
   }
 });
 
 router.post("/", auth("admin"), async (req, res) => {
-  const { error } = validationService.validateManufacturers(req.body);
+  const { error } = validationService.validateTicketTypes(req.body);
   if (error)
     return res.status(statusCodes.sc_400.code).json({
       status: statusCodes.sc_400.code,
@@ -48,12 +48,12 @@ router.post("/", auth("admin"), async (req, res) => {
 
   try {
     const result = await dbService.any(
-      "INSERT INTO manufacturers (manufacturer_name) \
+      "INSERT INTO ticket_types (ticket_type_name) \
       VALUES ($1) RETURNING *",
-      [req.body.manufacturer_name]
+      [req.body.ticket_type_name]
     );
     res.json(result);
-  } catch (error) {
+  } catch (e) {
     res.status(statusCodes.sc_500.code).json({
       status: statusCodes.sc_500.code,
       details: statusCodes.sc_500.defaultMessage,
@@ -62,7 +62,7 @@ router.post("/", auth("admin"), async (req, res) => {
 });
 
 router.put("/:id", verifyId, auth("admin"), async (req, res) => {
-  const { error } = validationService.validateManufacturers(req.body);
+  const { error } = validationService.validateTicketTypes(req.body);
   if (error)
     return res.status(statusCodes.sc_400.code).json({
       status: statusCodes.sc_400.code,
@@ -71,14 +71,14 @@ router.put("/:id", verifyId, auth("admin"), async (req, res) => {
 
   try {
     const result = await dbService.any(
-      "UPDATE manufacturers \
-      SET manufacturer_name = $1 \
-      WHERE manufacturer_id = $2 \
+      "UPDATE ticket_types \
+      SET ticket_type_name = $1 \
+      WHERE ticket_type_id = $2 \
       RETURNING *",
-      [req.body.manufacturer_name, req.params.id]
+      [req.body.ticket_type_name, req.params.id]
     );
     res.json(result);
-  } catch (error) {
+  } catch (e) {
     res.status(statusCodes.sc_500.code).json({
       status: statusCodes.sc_500.code,
       details: statusCodes.sc_500.defaultMessage,
@@ -89,13 +89,13 @@ router.put("/:id", verifyId, auth("admin"), async (req, res) => {
 router.delete("/:id", verifyId, auth("admin"), async (req, res) => {
   try {
     const result = await dbService.any(
-      "DELETE FROM manufacturers \
-      WHERE manufacturer_id = $1 \
+      "DELETE FROM ticket_types \
+      WHERE ticket_type_id = $1 \
       RETURNING *",
       [req.params.id]
     );
     res.json(result);
-  } catch (error) {
+  } catch (e) {
     res.status(statusCodes.sc_500.code).json({
       status: statusCodes.sc_500.code,
       details: statusCodes.sc_500.defaultMessage,

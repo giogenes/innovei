@@ -4,8 +4,16 @@ CREATE TABLE pallets (
     pallet_id SERIAL primary key,
     pallet_name varchar(16) NOT NULL,
     bay smallserial NOT NULL,
-    about varchar(128) NOT NULL,
+    pallet_description varchar(128) NOT NULL,
     UNIQUE(pallet_id, bay)
+);
+
+CREATE TABLE locations (
+
+location_id SERIAL primary key,
+location_name varChar(30) NOT NULL,
+super_location_id SMALLINT,
+next_location_ids SMALLINT []
 );
 
 CREATE TABLE manufacturers (
@@ -53,7 +61,8 @@ CREATE TABLE units (
     serial_num varChar(30) NOT NULL,
     unit_type_id SERIAL references unit_types(unit_type_id), 
     ticket_id SERIAL references tickets(ticket_id),
-    pallet_id SERIAL references pallets(pallet_id)
+    pallet_id SERIAL references pallets(pallet_id),
+    location_id SERIAL references locations(location_id)
 );
 
 CREATE TABLE users (
@@ -65,20 +74,10 @@ CREATE TABLE users (
     is_admin BOOLEAN NOT NULL
 );
 
-
-CREATE TABLE locations (
-
-location_id SERIAL primary key,
-location_name varChar(30) NOT NULL,
-super_location varChar(40),
-next_location_ids varChar(40)[]
-);
-
-
 INSERT INTO manufacturers (manufacturer_name)
 VALUES ('PowerVision Robot');
 
-INSERT INTO pallets (pallet_name, bay, about)
+INSERT INTO pallets (pallet_name, bay, pallet_description)
 VALUES ('INNPLLT082420001', 1, 'dummy pallet');
 
 INSERT INTO ticket_types (ticket_type_name)
@@ -98,15 +97,13 @@ FROM ticket_types, customers
 WHERE ticket_types.ticket_type_name = 'RMA'
 AND customers.customer_name = 'PowerVision Robot';
 
-INSERT INTO units (serial_num, unit_type_id, ticket_id, pallet_id)
-SELECT '110AAAA0000000', unit_types.unit_type_id, tickets.ticket_id, pallets.pallet_id
-FROM unit_types, tickets, pallets
+INSERT INTO locations (location_name, next_location_ids)
+VALUES ('A Stock', '{"2", "3", "4"}');
+
+INSERT INTO units (serial_num, unit_type_id, ticket_id, pallet_id, location_id)
+SELECT '110AAAA0000000', unit_types.unit_type_id, tickets.ticket_id, pallets.pallet_id, locations.location_id
+FROM unit_types, tickets, pallets, locations
 WHERE unit_types.unit_name = 'PowerEgg'
 AND tickets.ticket_name = '0001'
-AND pallets.pallet_name = 'INNPLLT082420001';
-
-/* 
-INSERT INTO locations (location_id, location_name, next_location_ids)
-VALUES ('1b0b1fe9-3a7f-41a9-88d9-8085cb85d970', 'A Stock', '{"44c14344-dda6-4741-b755-691f79895174", "159bca70-4945-4e5d-bb81-79a3a75db460", "008185d8-0324-4627-b817-6e9dd17538e3"}');
-*/
-
+AND pallets.pallet_name = 'INNPLLT082420001'
+AND locations.location_name = 'A Stock';

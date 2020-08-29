@@ -7,4 +7,7 @@ DROP TABLE ticket_types CASCADE;
 DROP TABLE customers CASCADE;
 DROP TABLE units CASCADE;
 DROP TABLE locations CASCADE;
+
+/*
 DROP TABLE users CASCADE;
+*/

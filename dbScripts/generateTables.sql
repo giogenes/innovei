@@ -1,109 +1,106 @@
-CREATE EXTENSION IF NOT EXISTS "SERIAL-ossp";
-
 CREATE TABLE pallets (
-    pallet_id SERIAL primary key,
-    pallet_name varchar(16) NOT NULL,
+    id SERIAL primary key,
+    name varchar(16) NOT NULL,
     bay smallserial NOT NULL,
-    pallet_description varchar(128) NOT NULL,
-    UNIQUE(pallet_id, bay)
+    description varchar(128) NOT NULL
 );
 
 CREATE TABLE locations (
 
-location_id SERIAL primary key,
-location_name varChar(30) NOT NULL,
-super_location_id SMALLINT,
-next_location_ids SMALLINT []
+id SERIAL primary key,
+name varChar(30) NOT NULL,
+super_id SMALLINT,
+next_ids SMALLINT []
 );
 
 CREATE TABLE manufacturers (
-    manufacturer_id SERIAL primary key,
-    manufacturer_name varchar(30) NOT NULL
-);
-
-CREATE TABLE unit_types (
-    unit_type_id SERIAL primary key,
-    unit_name varchar(30) NOT NULL,
-    part_number varchar(30) NOT NULL,
-    manufacturer_id SERIAL references manufacturers(manufacturer_id),
-    unit_description varchar(128) NOT NULL
+    id SERIAL primary key,
+    name varchar(30) NOT NULL
 );
 
 CREATE TABLE ticket_types (
-    ticket_type_id SERIAL primary key,
-    ticket_type_name varChar(10) NOT NULL
+    id SERIAL primary key,
+    name varChar(10) NOT NULL
 );
 
 CREATE TABLE customers (
-    customer_id SERIAL primary key,
-    customer_name varChar(50) NOT NULL,
-    customer_email varChar(50) NOT NULL,
-    customer_phone varChar(15) NOT NULL,
-    customer_address_1  varChar(50) NOT NULL,
-    customer_address_2 varChar(50) NOT NULL,
-    customer_city varChar(50) NOT NULL,
-    customer_state  varChar(10) NOT NULL,
-    customer_zip_code varChar(10) NOT NULL,
-    customer_country varChar(10) NOT NULL
+    id SERIAL primary key,
+    name varChar(50) NOT NULL,
+    email varChar(50) NOT NULL,
+    phone varChar(15) NOT NULL,
+    address1  varChar(50) NOT NULL,
+    address2 varChar(50) NOT NULL,
+    city varChar(50) NOT NULL,
+    state  varChar(10) NOT NULL,
+    zipcode varChar(10) NOT NULL,
+    country varChar(10) NOT NULL
+);
+
+CREATE TABLE unit_types (
+    id SERIAL primary key,
+    name varchar(30) NOT NULL,
+    pn varchar(30) NOT NULL,
+    manufacturer_id SERIAL references manufacturers(id),
+    description varchar(128) NOT NULL
 );
 
 CREATE TABLE tickets (
-    ticket_id SERIAL primary key,
-    ticket_name varChar(30) NOT NULL,
-    ticket_type_id SERIAL references ticket_types(ticket_type_id),
-    customer_id SERIAL references customers(customer_id)
+    id SERIAL primary key,
+    name varChar(30) NOT NULL,
+    ticket_type_id SERIAL references ticket_types(id),
+    customer_id SERIAL references customers(id)
 );
 
 
 CREATE TABLE units (
 
-    unit_id SERIAL primary key,
-    serial_num varChar(30) NOT NULL,
-    unit_type_id SERIAL references unit_types(unit_type_id), 
-    ticket_id SERIAL references tickets(ticket_id),
-    pallet_id SERIAL references pallets(pallet_id),
-    location_id SERIAL references locations(location_id)
+    id SERIAL primary key,
+    sn varChar(30) NOT NULL,
+    unit_type_id SERIAL references unit_types(id), 
+    ticket_id SERIAL references tickets(id),
+    pallet_id SERIAL references pallets(id),
+    location_id SERIAL references locations(id)
 );
 
 CREATE TABLE users (
 
-    user_id SERIAL primary key,
+    id SERIAL primary key,
     username varChar(30) NOT NULL,
     email varChar(30) NOT NULL,
     password text NOT NULL,
-    is_admin BOOLEAN NOT NULL
+    admin BOOLEAN NOT NULL
 );
 
-INSERT INTO manufacturers (manufacturer_name)
+INSERT INTO manufacturers (name)
 VALUES ('PowerVision Robot');
 
-INSERT INTO pallets (pallet_name, bay, pallet_description)
+INSERT INTO pallets (name, bay, description)
 VALUES ('INNPLLT082420001', 1, 'dummy pallet');
 
-INSERT INTO ticket_types (ticket_type_name)
+INSERT INTO ticket_types (name)
 VALUES ('RMA');
 
-INSERT INTO customers (customer_name, customer_email, customer_phone, customer_address_1, customer_address_2, customer_city, customer_state, customer_zip_code, customer_country)
+INSERT INTO customers (name, email, phone, address1, address2, city, state, zipcode, country)
 VALUES ('PowerVision Robot', 'support.us@powervision.me', '855-562-6699', '9570 Pan American Dr.', 'DOCK #6', 'El Paso', 'TX', '79928', 'USA');
 
-INSERT INTO unit_types (unit_name, part_number, manufacturer_id, unit_description)
-SELECT 'PowerEgg', 'PEG10', manufacturers.manufacturer_id,'Egg shaped areal drone'
+INSERT INTO unit_types (name, pn, manufacturer_id, description)
+SELECT 'PowerEgg', 'PEG10', manufacturers.id,'Egg shaped areal drone'
 FROM manufacturers
-WHERE manufacturers.manufacturer_name = 'PowerVision Robot';
+WHERE manufacturers.name = 'PowerVision Robot';
 
-INSERT INTO tickets (ticket_name, ticket_type_id, customer_id)
-SELECT '0001', ticket_types.ticket_type_id, customers.customer_id
+INSERT INTO tickets (name, ticket_type_id, customer_id)
+SELECT '0001', ticket_types.id, customers.id
 FROM ticket_types, customers
-WHERE ticket_types.ticket_type_name = 'RMA'
-AND customers.customer_name = 'PowerVision Robot';
+WHERE ticket_types.name = 'RMA'
+AND customers.name = 'PowerVision Robot';
 
-INSERT INTO locations (location_name, next_location_ids)
+INSERT INTO locations (name, next_ids)
 VALUES ('A Stock', '{"2", "3", "4"}');
 
-INSERT INTO units (serial_num, unit_type_id, ticket_id, pallet_id, location_id)
-SELECT '110AAAA0000000', unit_types.unit_type_id, tickets.ticket_id, pallets.pallet_id, locations.location_id
+INSERT INTO units (sn, unit_type_id, ticket_id, pallet_id, location_id)
+SELECT '110AAAA0000000', unit_types.id, tickets.id, pallets.id, locations.id
 FROM unit_types, tickets, pallets, locations
-WHERE unit_types.unit_name = 'PowerEgg'
-AND tickets.ticket_name = '0001'
-AND pallets.pallet_name = 'INNPLLT082420001'
-AND locations.location_name = 'A Stock';
+WHERE unit_types.name = 'PowerEgg'
+AND tickets.name = '0001'
+AND pallets.name = 'INNPLLT082420001'
+AND locations.name = 'A Stock';

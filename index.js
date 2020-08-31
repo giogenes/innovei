@@ -29,16 +29,13 @@ app.use("/api/units", units);
 app.use("/api/users", auth);
 
 app.get("/", (req, res) => {
-  res.send(
-    "<h1>Innovei Technologies Web Application API v0.1.0</h1></br><p>Please visit /api/item to get started</p>"
-  );
+  res.send("<h1>Innovei Technologies Web Application API v0.1.0</h1></br><p>Please visit /api/item to get started</p>");
 });
 
 app.get("/api", (req, res) => {
   res.json({
     status: 200,
-    detials:
-      "Innovei Technologies Web Application API v0.1.0, please visit /api/item to get started",
+    detials: "Innovei Technologies Web Application API v0.1.0, please visit /api/item to get started",
   });
 });
 

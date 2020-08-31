@@ -4,8 +4,8 @@ const auth = require("../middleware/verifyToken");
 const verifyId = require("../middleware/verifyId");
 
 const dbService = require("../services/dbService");
-const statusCodes = require("../services/statusCodeService");
 const validationService = require("../services/validationService");
+const { statusCodeJSON } = require("../services/statusCodeService");
 
 const router = express.Router();
 
@@ -14,137 +14,70 @@ router.get("/", auth("user"), async (req, res) => {
     const result = await dbService.any("SELECT * FROM customers");
     res.json(result);
   } catch (e) {
-    res.status(statusCodes.sc_500.code).json({
-      status: statusCodes.sc_500.code,
-      details: statusCodes.sc_500.defaultMessage,
-    });
+    res.status(500).json(statusCodeJSON(500));
   }
 });
 
 router.get("/:id", verifyId, auth("user"), async (req, res) => {
   try {
-    const result = await dbService.any(
-      "SELECT * \
+    const result = await dbService.any("SELECT * \
       FROM customers \
-      WHERE customer_id = $1",
-      [req.params.id]
-    );
+      WHERE id = $1", [req.params.id]);
     res.json(result);
   } catch (e) {
-    res.status(statusCodes.sc_404.code).json({
-      status: statusCodes.sc_404.code,
-      details: statusCodes.sc_404.defaultMessage,
-    });
+    res.status(500).json(statusCodeJSON(500));
   }
 });
 
 router.post("/", auth("admin"), async (req, res) => {
-  const {
-    customer_name,
-    customer_email,
-    customer_phone,
-    customer_address_1,
-    customer_address_2,
-    customer_city,
-    customer_state,
-    customer_zip_code,
-    customer_country,
-  } = req.body;
+  const { name, email, phone, address1, address2, city, state, zipcode, country } = req.body;
   const { error } = validationService.validateCustomers(req.body);
-  if (error)
-    return res.status(statusCodes.sc_400.code).json({
-      status: statusCodes.sc_400.code,
-      details: error.details[0].message,
-    });
+  if (error) return res.status(500).json(statusCodeJSON(500, error.details[0].message));
 
   try {
     const result = await dbService.any(
       "INSERT INTO customers \
-    (customer_name, customer_email, customer_phone, customer_address_1, customer_address_2, \
-    customer_city, customer_state, customer_zip_code, customer_country) \
+    (name, email, phone, address1, address2, \
+    city, state, zipcode, country) \
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
-      [
-        customer_name,
-        customer_email,
-        customer_phone,
-        customer_address_1,
-        customer_address_2,
-        customer_city,
-        customer_state,
-        customer_zip_code,
-        customer_country,
-      ]
+      [name, email, phone, address1, address2, city, state, zipcode, country]
     );
     res.json(result);
   } catch (error) {
-    res.status(statusCodes.sc_500.code).json({
-      status: statusCodes.sc_500.code,
-      details: statusCodes.sc_500.defaultMessage,
-    });
+    console.log(error);
+    res.status(500).json(statusCodeJSON(500));
   }
 });
 
 router.put("/:id", verifyId, auth("admin"), async (req, res) => {
-  const {
-    customer_name,
-    customer_email,
-    customer_phone,
-    customer_address_1,
-    customer_address_2,
-    customer_city,
-    customer_state,
-    customer_zip_code,
-    customer_country,
-  } = req.body;
+  const { name, email, phone, address1, address2, city, state, zipcode, country } = req.body;
   const { error } = validationService.validateCustomers(req.body);
-  if (error)
-    return res.status(statusCodes.sc_400.code).json({
-      status: statusCodes.sc_400.code,
-      details: error.details[0].message,
-    });
+  if (error) return res.status(500).json(statusCodeJSON(500, error.details[0].message));
 
   try {
     const result = await dbService.any(
-      "UPDATE customers SET customer_name = $1, customer_email = $2, customer_phone = $3, customer_address_1 = $4, \
-      customer_address_2 = $5, customer_city = $6, customer_state = $7, customer_zip_code = $8, customer_country = $9 \
-      WHERE customer_id = $10 \
+      "UPDATE customers SET name = $1, email = $2, phone = $3, address1 = $4, \
+      address2 = $5, city = $6, state = $7, zipcode = $8, country = $9 \
+      WHERE id = $10 \
       RETURNING *",
-      [
-        customer_name,
-        customer_email,
-        customer_phone,
-        customer_address_1,
-        customer_address_2,
-        customer_city,
-        customer_state,
-        customer_zip_code,
-        customer_country,
-        req.params.id,
-      ]
+      [name, email, phone, address1, address2, city, state, zipcode, country, req.params.id]
     );
     res.json(result);
   } catch (error) {
-    res.status(statusCodes.sc_500.code).json({
-      status: statusCodes.sc_500.code,
-      details: statusCodes.sc_500.defaultMessage,
-    });
+    res.status(500).json(statusCodeJSON(500));
   }
 });
 
 router.delete("/:id", verifyId, auth("admin"), async (req, res) => {
   try {
-    const result = await dbService.any(
-      "DELETE FROM customers \
-      WHERE customer_id = $1 \
-      RETURNING *",
-      [req.params.id]
-    );
+    const result = await dbService.any("DELETE FROM customers \
+      WHERE id = $1 \
+      RETURNING *", [
+      req.params.id,
+    ]);
     res.json(result);
   } catch (e) {
-    res.status(statusCodes.sc_500.code).json({
-      status: statusCodes.sc_500.code,
-      details: statusCodes.sc_500.defaultMessage,
-    });
+    res.status(500).json(statusCodeJSON(500));
   }
 });
 

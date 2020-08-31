@@ -7,3 +7,11 @@ const statusCodes = {
 };
 
 module.exports = statusCodes;
+module.exports.statusCodeJSON = function (code, additionalMessage = "") {
+  try {
+    const statusCode = statusCodes["sc_" + code];
+    return { status: statusCode.code, details: `${statusCode.defaultMessage}, ${additionalMessage}` };
+  } catch (error) {
+    return { status: `error code ${code} not found in status code service library` };
+  }
+};

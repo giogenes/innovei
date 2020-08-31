@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 const validateManufacturers = (object) => {
   const schema = Joi.object({
-    manufacturer_name: Joi.string().min(4).required(),
+    name: Joi.string().min(4).required(),
   });
 
   return schema.validate(object);
@@ -10,9 +10,9 @@ const validateManufacturers = (object) => {
 
 const validateLocations = (object) => {
   const schema = Joi.object({
-    location_name: Joi.string().min(1).max(16).required(),
-    super_location_id: Joi.number(),
-    next,
+    name: Joi.string().min(1).max(16).required(),
+    super_id: Joi.number(),
+    next_ids: Joi.array(Joi.number()),
   });
 
   return schema.validate(object);
@@ -28,9 +28,9 @@ const validateTicketTypes = (object) => {
 
 const validatePallets = (object) => {
   const schema = Joi.object({
-    pallet_name: Joi.string().min(16).max(16).required(),
+    name: Joi.string().min(16).max(16).required(),
     bay: Joi.number().required(),
-    about: Joi.string().min(1).max(128),
+    description: Joi.string().min(1).max(128),
   });
 
   return schema.validate(object);
@@ -38,15 +38,15 @@ const validatePallets = (object) => {
 
 const validateCustomers = (object) => {
   const schema = Joi.object({
-    customer_name: Joi.string().min(1).max(32).required(),
-    customer_email: Joi.string().email().required(),
-    customer_phone: Joi.string().min(1).max(15).required(),
-    customer_address_1: Joi.string().min(1).max(128).required(),
-    customer_address_2: Joi.string().min(1).max(128).required(),
-    customer_city: Joi.string().min(1).max(32).required(),
-    customer_state: Joi.string().min(1).max(36).required(),
-    customer_zip_code: Joi.string().min(1).max(8).required(),
-    customer_country: Joi.string().min(1).max(32).required(),
+    name: Joi.string().min(1).max(32).required(),
+    email: Joi.string().email().required(),
+    phone: Joi.string().min(1).max(15).required(),
+    address1: Joi.string().min(1).max(128).required(),
+    address2: Joi.string().min(1).max(128).required(),
+    city: Joi.string().min(1).max(32).required(),
+    state: Joi.string().min(1).max(36).required(),
+    zipcode: Joi.string().min(1).max(8).required(),
+    country: Joi.string().min(1).max(32).required(),
   });
 
   return schema.validate(object);
@@ -54,10 +54,10 @@ const validateCustomers = (object) => {
 
 const validateUnitTypes = (object) => {
   const schema = Joi.object({
-    unit_name: Joi.string().min(4).max(32).required(),
-    part_number: Joi.string().min(1).max(16).required(),
+    name: Joi.string().min(4).max(32).required(),
+    pn: Joi.string().min(1).max(16).required(),
     manufacturer_id: Joi.number().required(),
-    unit_description: Joi.string().min(1).max(128),
+    description: Joi.string().min(1).max(128),
   });
 
   return schema.validate(object);
@@ -65,7 +65,7 @@ const validateUnitTypes = (object) => {
 
 const validateTickets = (object) => {
   const schema = Joi.object({
-    ticket_name: Joi.string().min(1).max(16).required(),
+    name: Joi.string().min(1).max(16).required(),
     ticket_type_id: Joi.number().required(),
     customer_id: Joi.number().required(),
   });
@@ -75,7 +75,7 @@ const validateTickets = (object) => {
 
 const validateUnits = (object) => {
   const schema = Joi.object({
-    serial_num: Joi.string().min(1).max(32).required(),
+    sn: Joi.string().min(1).max(32).required(),
     unit_type_id: Joi.number().required(),
     ticket_id: Joi.number().required(),
     pallet_id: Joi.number().required(),

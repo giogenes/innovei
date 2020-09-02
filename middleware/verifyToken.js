@@ -1,12 +1,11 @@
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 
 const statusCodes = require("../services/statusCodeService");
 
-const bypass = true;
-
 module.exports = function (authLevel) {
   return function (req, res, next) {
-    if (bypass) return next();
+    if (parseInt(process.env.BYPASS_AUTH)) return next();
     const token = req.header("auth-token");
 
     if (!token)

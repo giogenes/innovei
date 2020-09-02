@@ -13,44 +13,83 @@ const router = express.Router();
 
 router.get("/", auth("user"), async (req, res) => {
   try {
-    const data = await dbService.task((task) => {
-      return task
-        .map("SELECT * FROM units", [], async (unit) => {
-          const unit_type = await task.one("SELECT * FROM unit_types WHERE id = $1", unit.unit_type_id);
-          const manufacturer = await task.one("SELECT * FROM manufacturers WHERE id = $1", unit_type.manufacturer_id);
-          const ticket = await task.one("SELECT * FROM tickets WHERE id = $1", unit.ticket_id);
-          const ticket_type = await task.one("SELECT * FROM ticket_types WHERE id = $1", ticket.ticket_type_id);
-          const customer = await task.one("SELECT * FROM customers WHERE id = $1", ticket.customer_id);
-          const pallet = await task.one("SELECT * FROM pallets WHERE id = $1", unit.pallet_id);
-          const location = await task.one("SELECT * FROM locations WHERE id = $1", unit.location_id);
-
-          delete unit.unit_type_id;
-          delete unit_type.manufacturer_id;
-          delete unit.ticket_id;
-          delete ticket.ticket_type_id;
-          delete ticket.customer_id;
-          delete unit.pallet_id;
-          delete unit.location_id;
-
-          unit_type.manufacturer = manufacturer;
-          unit.unit_type = unit_type;
-
-          ticket.ticket_type = ticket_type;
-          ticket.customer = customer;
-
-          unit.ticket = ticket;
-          unit.pallet = pallet;
-          unit.location = location;
-          return unit;
-        })
-        .then(task.batch)
-        .catch((error) => {
-          res.status(500).json(statusCodeJSON(500));
-        });
-    });
-    res.json(data);
+    const pageSize = req.query.pageSize;
+    const page = req.query.page;
+    const LIMIT = pageSize && page ? pageSize : "ALL";
+    const OFFSET = pageSize && page ? page * pageSize : 0;
+    const result = await dbService.map(
+      "SELECT units.id AS u_id, units.sn AS u_sn, \
+      unit_types.id AS ut_id, unit_types.name AS ut_name, unit_types.pn AS ut_pn, manufacturers.id AS m_id, \
+      manufacturers.name AS m_name, unit_types.description AS ut_desc, \
+      tickets.id AS t_id, tickets.name AS t_name, ticket_types.id AS tt_id, ticket_types.name AS tt_name, \
+      customers.id AS c_id, customers.name AS c_name, customers.email AS c_email, customers.phone AS c_phone, \
+      customers.address1 AS c_add1, customers.address2 AS c_add2, customers.city AS c_city, \
+      customers.state AS c_state, customers.zipcode AS c_zip, customers.country AS c_country, \
+      pallets.id AS p_id, pallets.name AS p_name, bay AS p_bay, pallets.description AS p_desc, \
+      locations.id AS l_id, locations.name AS l_name, super_id AS l_super_id, next_ids AS l_next_ids \
+      FROM units \
+      INNER JOIN unit_types \
+        INNER JOIN manufacturers ON unit_types.manufacturer_id = manufacturers.id \
+      ON units.unit_type_id = unit_types.id \
+      INNER JOIN tickets \
+        INNER JOIN ticket_types ON tickets.ticket_type_id = ticket_types.id \
+        INNER JOIN customers ON tickets.customer_id = customers.id \
+      ON units.ticket_id = tickets.id \
+      INNER JOIN pallets ON units.pallet_id = pallets.id \
+      INNER JOIN locations ON units.location_id = locations.id ORDER BY units.id LIMIT $1:raw OFFSET $2",
+      [LIMIT, OFFSET],
+      (unit) => {
+        return {
+          id: unit.u_id,
+          sn: unit.u_sn,
+          unit_type: {
+            id: unit.ut_id,
+            name: unit.ut_name,
+            pn: unit.ut_pn,
+            manufacturer: {
+              id: unit.m_id,
+              name: unit.m_name,
+            },
+            description: unit.ut_desc,
+          },
+          ticket: {
+            id: unit.t_id,
+            name: unit.t_name,
+            ticket_type: {
+              id: unit.tt_id,
+              name: unit.tt_name,
+            },
+            customer: {
+              id: unit.c_id,
+              name: unit.c_name,
+              email: unit.c_name,
+              phone: unit.c_name,
+              address1: unit.c_add1,
+              address2: unit.c_add2,
+              city: unit.c_city,
+              state: unit.c_state,
+              zipcode: unit.c_zip,
+              country: unit.c_country,
+            },
+          },
+          pallet: {
+            id: unit.p_id,
+            name: unit.p_name,
+            bay: unit.p_bay,
+            description: unit.p_desc,
+          },
+          location: {
+            id: unit.l_id,
+            name: unit.l_name,
+            super_id: unit.l_super_id,
+            next_ids: unit.l_super_ids,
+          },
+        };
+      }
+    );
+    res.json(result);
   } catch (error) {
-    res.status(500).json(statusCodeJSON(500));
+    console.log(error);
   }
 });
 

@@ -46,7 +46,7 @@ dbSerive
     obj.done();
   })
   .catch(function (error) {
-    console.log("could not connect to PostgreSQL server");
+    console.log("could not connect to PostgreSQL server", error);
   });
 
 app.listen(PORT, () => console.log(`backend service started on port ${PORT}`));

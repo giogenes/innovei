@@ -4,8 +4,10 @@
   "description": "innovei web application",
   "main": "index.js",
   "scripts": {
+    "server": "nodemon index",
+    "client": "cd client && npm run start",
     "start": "node index",
-    "dev": "nodemon index"
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",

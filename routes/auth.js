@@ -22,12 +22,9 @@ router.post("/register", async (req, res) => {
     });
 
   try {
-    const result = await dbService.any(
-      "SELECT * \
+    const result = await dbService.any("SELECT * \
       FROM users \
-      WHERE email = $1",
-      [req.body.email]
-    );
+      WHERE email = $1", [req.body.email]);
     if (!_.isEmpty(result))
       return res.status(statusCodes.sc_400.code).json({
         status: statusCodes.sc_400.code,
@@ -70,31 +67,22 @@ router.post("/login", async (req, res) => {
     });
 
   try {
-    const result = await dbService.any(
-      "SELECT * \
+    const result = await dbService.any("SELECT * \
       FROM users \
-      WHERE email = $1",
-      [req.body.email]
-    );
+      WHERE email = $1", [req.body.email]);
     if (_.isEmpty(result))
       return res.status(statusCodes.sc_400.code).json({
         status: statusCodes.sc_400.code,
         details: "email does not exist",
       });
 
-    const validPassword = await bcrypt.compare(
-      req.body.password,
-      result[0].password
-    );
+    const validPassword = await bcrypt.compare(req.body.password, result[0].password);
     if (!validPassword)
       return res.status(statusCodes.sc_400.code).json({
         status: statusCodes.sc_400.code,
         details: "incorrect password",
       });
-    const token = jwt.sign(
-      { user_id: result[0].user_id, is_admin: result[0].is_admin },
-      process.env.PRIVATE_KEY
-    );
+    const token = jwt.sign({ user_id: result[0].user_id, is_admin: result[0].is_admin }, process.env.PRIVATE_KEY);
     res.header("auth-token", token).json({ status: 200, details: "logged in" });
   } catch (error) {
     res.status(statusCodes.sc_500.code).json({
